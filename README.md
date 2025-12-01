@@ -74,4 +74,17 @@ systemctl enable oucshell.service
 ## 🤝 贡献者
 
 <!-- readme: contributors -start -->
+<table>
+	<tbody>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/Yaosanqi137">
+                    <img src="https://avatars.githubusercontent.com/u/99163721?v=4" width="100;" alt="Yaosanqi137"/>
+                    <br />
+                    <sub><b>Yaosanqi137</b></sub>
+                </a>
+            </td>
+		</tr>
+	<tbody>
+</table>
 <!-- readme: contributors -end -->
