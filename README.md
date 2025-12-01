@@ -88,6 +88,13 @@ systemctl enable oucshell.service
                     <sub><b>Yaosanqi137</b></sub>
                 </a>
             </td>
+            <td align="center">
+                <a href="https://github.com/Howard-aile">
+                    <img src="https://avatars.githubusercontent.com/u/156976283?v=4" width="100;" alt="Howard-aile"/>
+                    <br />
+                    <sub><b>Howard-aile</b></sub>
+                </a>
+            </td>
 		</tr>
 	<tbody>
 </table>
