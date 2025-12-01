@@ -130,18 +130,22 @@ log "服务启动..."
 check_and_install_dependencies
 check_and_create_config
 
-# 任务间隔 (秒)
+# 电费提醒任务间隔 (秒)
 INTERVAL_ELEC=7200  # 2小时
 LAST_RUN_ELEC=0
+
+# 网费提醒任务间隔 (秒)
+INTERVAL_NET=43200  # 半天
+LAST_RUN_NET=0
 
 log "进入循环调度模式..."
 
 while true; do
     CURRENT_TIME=$(date +%s)
 
-    # 计算时间差
-
     # 电费监控
+
+    # 计算时间差
     TIME_DIFF=$((CURRENT_TIME - LAST_RUN_ELEC))
 
     if [ $TIME_DIFF -ge $INTERVAL_ELEC ]; then
@@ -163,7 +167,11 @@ while true; do
         LAST_RUN_ELEC=$(date +%s)
     fi
 
-    # 电费监控
+    # 网费监控
+
+    # 计算时间差
+    TIME_DIFF=$((CURRENT_TIME - LAST_RUN_NET))
+
     if [ $TIME_DIFF -ge $INTERVAL_NET ]; then
         SCRIPT_PATH="$SRC_DIR/internet_monitor.sh"
 
