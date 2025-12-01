@@ -71,7 +71,7 @@ $content"
         --upload-file -
 }
 
-# --- 业务逻辑: 西海岸校区 ---
+# 西海岸电费获取
 check_xha() {
     local sno=$(get_val "Electricity.xha" "StudentID")
     local token=$(get_val "Electricity.xha" "Token")

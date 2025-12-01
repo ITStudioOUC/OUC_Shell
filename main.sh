@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # ==========================================
-# 主控制脚本 (Main Runner)
-# 功能：依赖管理、配置生成、任务调度、日志整合
+# 主控脚本
 # ==========================================
 
 # --- 1. 路径定义 ---
@@ -37,11 +36,18 @@ check_and_install_dependencies() {
     log "检测到缺失依赖: ${missing_packages[*]}，尝试自动安装..."
 
     local install_cmd=""
-    if command -v apt-get &> /dev/null; then install_cmd="apt-get update && apt-get install -y";
-    elif command -v yum &> /dev/null; then install_cmd="yum install -y";
-    elif command -v dnf &> /dev/null; then install_cmd="dnf install -y";
-    elif command -v apk &> /dev/null; then install_cmd="apk add --no-cache";
-    else log "无法自动安装，请手动安装: ${missing_packages[*]}"; exit 1; fi
+    if command -v apt-get &> /dev/null; then
+        install_cmd="apt-get update && apt-get install -y"
+    elif command -v yum &> /dev/null; then
+        install_cmd="yum install -y"
+    elif command -v dnf &> /dev/null; then
+        install_cmd="dnf install -y"
+    elif command -v apk &> /dev/null; then
+        install_cmd="apk add --no-cache"
+    else
+        log "无法自动安装，请手动安装: ${missing_packages[*]}"
+        exit 1
+    fi
 
     if [ "$EUID" -ne 0 ] && command -v sudo &> /dev/null; then
         install_cmd="sudo $install_cmd"
@@ -62,7 +68,7 @@ check_and_install_dependencies() {
     log "依赖安装完成。"
 }
 
-# --- 4. 配置文件生成与检查 ---
+# 配置文件生成与检查
 check_and_create_config() {
     if [ ! -f "$CONFIG_FILE" ]; then
         log "配置文件不存在，正在生成默认配置..."
@@ -84,18 +90,18 @@ Password = "your_smtp_auth_code"
 
 # --- 功能模块: 电费提醒 ---
 [Electricity]
-Enabled = true
-Campus = "xha"
+Enabled = true # 是否启用本模块
+Campus = "xha" # 校区选择
 # xha = 西海岸
 
 [Electricity.xha]
-StudentID = "20230000"
+StudentID = "XXX" # 学号
 Token = "YOUR_TOKEN_HERE"
 # [照明警戒值, 空调警戒值]
 RemindTime = [30.0, 30.0]
 EOF
         log "配置文件已生成: $CONFIG_FILE"
-        log "检测到第一次加载此脚本，将自动结束本脚本，请前往编辑配置文件"
+        log "检测到第一次运行，脚本将自动退出，请编辑配置文件后重新启动"
         exit 0
     else
         log "加载配置文件: $CONFIG_FILE"
