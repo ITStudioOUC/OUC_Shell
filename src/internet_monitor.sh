@@ -59,6 +59,22 @@ $content"
     echo "$mail_data" | curl --silent --ssl-reqd --url "$curl_url" --user "$smtp_user:$smtp_pass" --mail-from "$smtp_user" --mail-rcpt "$target_email" --upload-file -
 }
 
+# 兼容 macOS (BSD date) 与 Linux (GNU date) 计算距离下个月1号的天数
+days_until_next_month() {
+    local now_ts next_month_ts
+    now_ts=$(date +%s)
+
+    if date -v1d -v+1m +%s >/dev/null 2>&1; then
+        # macOS/BSD date
+        next_month_ts=$(date -v+1m -v1d +%s)
+    else
+        # GNU date
+        next_month_ts=$(date -d "$(date +%Y-%m-01) +1 month" +%s)
+    fi
+
+    echo $(( (next_month_ts - now_ts) / 86400 ))
+}
+
 # 西海岸网费检查
 check_xha_net() {
     local sno=$(get_val "Internet.xha" "StudentID")
@@ -121,10 +137,8 @@ check_xha_net() {
         else
             # 4.2 如果配置了日期限制，检查是否接近月底
             # 计算距离下个月1号还有几天
-            local next_month_ts=$(date -d "$(date +%Y-%m-01) +1 month" +%s)
-            local now_ts=$(date +%s)
-            local diff_sec=$((next_month_ts - now_ts))
-            local diff_days=$((diff_sec / 86400))
+            local diff_days
+            diff_days=$(days_until_next_month)
 
             echo "距离月底结算还有: ${diff_days} 天 (配置阈值: ${day_limit} 天)"
 
