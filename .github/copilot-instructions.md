@@ -17,7 +17,7 @@
 
 # Output Template (请严格遵循此格式)
 
-请完全按照以下 Markdown 结构生成回复：
+请完全按照以下 Markdown 结构，生成GitHub Comment：
 
 # 🛡️ 代码审查报告 (AI Code Review)
 
