@@ -36,40 +36,75 @@ bash main.sh
 
 在首次运行或重新生成配置文件时，脚本会自动生成配置文件 `config.toml` ，之后脚本会自动退出，在你编辑好配置文件后重新启动脚本即可
 
-3.注册服务
+3.注册服务 / 设置自启动
 
-创建服务文件
+**Linux（systemd）**
 
-```
-touch /etc/systemd/system/oucshell.service
-```
+- 创建服务文件
+  ```
+  touch /etc/systemd/system/oucshell.service
+  ```
+- 编辑服务文件（按实际路径替换）
+  ```
+  # 这只是一个systemd服务注册示例，不要直接拿来用
+  [Unit]
+  Description=Campus Helper Service (Electricity & More)
+  After=network.target
 
-编辑服务文件
+  [Service]
+  Type=simple
+  User=root
+  WorkingDirectory=/绝对路径/到/OUC_Shell           # 替换为你的仓库路径
+  ExecStart=/bin/bash /绝对路径/到/OUC_Shell/main.sh # 替换为你的 main.sh 路径
+  Restart=always
+  RestartSec=10
 
-```
-# 这只是一个systemd服务注册示例，不要直接拿来用
-[Unit]
-Description=Campus Helper Service (Electricity & More)
-After=network.target
+  [Install]
+  WantedBy=multi-user.target
+  ```
+- 启动并设置开机自启
+  ```
+  systemctl start oucshell.service
+  systemctl enable oucshell.service
+  ```
 
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/path/to/your/repo # 这里改成你克隆的本仓库的路径
-ExecStart=/bin/bash /path/to/main.sh # 这里改成你的main.sh的路径
-Restart=always
-RestartSec=10
+**macOS（LaunchAgent，随用户登录启动）**
 
-[Install]
-WantedBy=multi-user.target
-```
+- 安装依赖（macOS 自带 curl，需安装 jq 与 bc）
+  ```
+  brew install jq bc
+  ```
+> **注意**：下方 plist 文件中的所有 `/绝对路径/到/OUC_Shell` 都需要替换为你的实际仓库绝对路径（例如 `/Users/yourname/github_project/OUC_Shell`），否则服务无法正常运行。
+- 创建 LaunchAgent（把路径换成你自己的绝对路径）
+  cat > ~/Library/LaunchAgents/cn.ouc.shell.plist <<'EOF'
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>cn.ouc.shell</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/bin/bash</string>
+      <string>/绝对路径/到/OUC_Shell/main.sh</string>
+    </array>
+    <key>WorkingDirectory</key><string>/绝对路径/到/OUC_Shell</string>
+    <key>StandardOutPath</key><string>/绝对路径/到/OUC_Shell/service.log</string>
+    <key>StandardErrorPath</key><string>/绝对路径/到/OUC_Shell/service.log</string>
+    <key>RunAtLoad</key><true/>
+    <key>KeepAlive</key><true/>
+  </dict>
+  </plist>
+  EOF
 
-4.启动服务和设置自启动
-
-```
-systemctl start oucshell.service
-systemctl enable oucshell.service
-```
+launchctl load ~/Library/LaunchAgents/cn.ouc.shell.plist
+  ```
+  - 请将 `/绝对路径/到/OUC_Shell` 替换为你的实际仓库路径（例如 `/Users/yourname/github_project/OUC_Shell`）。
+  - 停止/重载：`launchctl unload ~/Library/LaunchAgents/cn.ouc.shell.plist` 后再 `load`。
+- 查看运行日志
+  ```
+  tail -f /绝对路径/到/OUC_Shell/service.log
+  ```
 
 # 效果演示
 
